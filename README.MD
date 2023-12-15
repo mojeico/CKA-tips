@@ -17,6 +17,34 @@
 6) kube-proxy - run on each node and manage networking in cluster (use ip table rule )
 
 
-
 # Get process of k8s
-- px -aux | grep kube-scheduler
+- `px -aux | grep kube-scheduler`
+
+
+# Static pods
+- Info about it - https://kubernetes.io/docs/tasks/configure-pod-container/static-pod/
+- Path - `/etc/kubernetes/manifests`
+- Create static pod -` kubectl run --image=nginx static-nginx --dry-run=client -o yaml  > /etc/kubernetes/manifests/static-busybox.yaml`
+
+# Kube Scheduler Configuration
+- Info about it - https://kubernetes.io/docs/reference/scheduling/config/
+- Info about it - https://kubernetes.io/docs/tasks/extend-kubernetes/configure-multiple-schedulers/
+
+# How does the Kubernetes scheduler work?
+- https://stackoverflow.com/questions/28857993/how-does-kubernetes-scheduler-work
+- https://jvns.ca/blog/2017/07/27/how-does-the-kubernetes-scheduler-work/
+- https://kubernetes.io/blog/2017/03/advanced-scheduling-in-kubernetes/
+- https://github.com/kubernetes/community/blob/master/contributors/devel/sig-scheduling/scheduling_code_hierarchy_overview.md
+
+# Pod Priority and Preemption 
+- Info about it - https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
+
+
+# Add Encryption 
+- https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/
+
+# Monitoring 
+- Get memory and CPU of nodes - `kubectl top node`
+- Get memory and CPU of pods - `kubectl top pod`
+
+
