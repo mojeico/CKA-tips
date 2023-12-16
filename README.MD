@@ -18,8 +18,8 @@
 
 
 # Get process of k8s
-- `px -aux | grep kube-scheduler`
-
+- `ps -aux | grep kube-scheduler`
+- `ps -ef | grep etcd`
 
 # Static pods
 - Info about it - https://kubernetes.io/docs/tasks/configure-pod-container/static-pod/
@@ -73,6 +73,7 @@ cat /etc/*release*
 
 
 # Update cluster (worker node) components
+- More info - https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/
 - Drain node - `kubectl drain node_name`
 - Update the package index - `apt-get update`
 - Update kubeadm - `apt-get upgrade -y kubeadm=1.27.0-00`
@@ -83,10 +84,44 @@ cat /etc/*release*
 - Uncordon node - `kubectl uncordon node_name`
 
 
+# Backup etcd
+- More info - https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#backing-up-an-etcd-cluster
+- Get etcd version - `kubectl -n kube-system describe pod etcd-controlplane | grep Image:`
+- Get client address - `kubectl -n kube-system describe pod etcd-controlplane | grep '\--listen-client-urls'`
+- Get etcd certificate file located - `kubectl -n kube-system describe pod etcd-controlplane | grep '\--cert-file'`
+- Get etcd trusted CA Certificate file located - `kubectl -n kube-system describe pod etcd-controlplane | grep '\--trusted-ca-file'`
+- Get etcd key file location - `kubectl -n kube-system describe pod etcd-controlplane | grep peer-key-file`
+- Create snapshot - ETCDCTL_API=3 etcdctl snapshot save /opt/snapshot-pre-boot.db \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/server.crt \
+  --key=/etc/kubernetes/pki/etcd/server.key 
+
+
+# Restore etcd
+- More info - https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#restoring-an-etcd-cluster
+- Restore etcd - `ETCDCTL_API=3 etcdctl snapshot restore --data-dir /var/lib/etcd-from-backup  /opt/snapshot-pre-boot.db`
+- Update volume in etcd pod 
+    - vi /etc/kubernetes/manifests/etcd.yaml
+    - In volume "etcd-data" change old path to new from "--data-dir"
+```
+volumes:
+- hostPath:
+  path: /var/lib/etcd-from-backup
+  type: DirectoryOrCreate
+  name: etcd-data
+```
+
+
+# Context 
+- Get kubectl config - `kubectl config view`
+- Switch to cluster from config - `kubectl config use-context cluster_name`
 
 
 
- 
+
+
+
 
 
 
