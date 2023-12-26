@@ -101,7 +101,7 @@ cat /etc/*release*
 # Restore etcd
 - More info - https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#restoring-an-etcd-cluster
 - Restore etcd - `ETCDCTL_API=3 etcdctl snapshot restore --data-dir /var/lib/etcd-from-backup  /opt/snapshot-pre-boot.db`
-- Update volume in etcd pod 
+- Update volume in etcd static pod 
     - vi /etc/kubernetes/manifests/etcd.yaml
     - In volume "etcd-data" change old path to new from "--data-dir"
 ```
@@ -113,19 +113,97 @@ volumes:
 ```
 
 
-# Context 
+# Kubeconfig - Context  
 - Get kubectl config - `kubectl config view`
+- Get kubectl specific config - `kubectl config view --kubeconfig path_to_config`
 - Switch to cluster from config - `kubectl config use-context cluster_name`
+- Get current context - `kubectl config current-context --kubeconfig path_to_config`
 
 
 
+# Certification OpenSSL
+- Generate key - `openssl genrsa -out admin.key 2048`
+- Generate certificate signing request - ` openssl req -new  -key admin.key -subj "/CN=kube-admin" -out admin.csr`
+- Test - ``
 
 
 
+# KubeDNS
+- CoreDNS - deployed to kube-system  ns (2 pods)  -> service_name.namespace_name.service.cluster.local
 
 
 
+# Install Cluster - kubeadm
+- More info - https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+- Install Container Runtimes - https://kubernetes.io/docs/setup/production-environment/container-runtimes/
+- Each node : 
+```shell
 
+cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+br_netfilter
+EOF
+
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+
+sudo sysctl --system
+
+```
+- Install kubeadm, kubectl and kubelet on all nodes: - https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+```shell
+
+sudo apt-get update
+sudo apt-get install -y apt-transport-https ca-certificates curl
+
+sudo mkdir -m 755 /etc/apt/keyrings
+
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.27/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.27/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+sudo apt-get update
+
+# To see the new version labels
+sudo apt-cache madison kubeadm
+
+sudo apt-get install -y kubelet=1.27.0-2.1 kubeadm=1.27.0-2.1 kubectl=1.27.0-2.1
+
+sudo apt-mark hold kubelet kubeadm kubectl
+
+```
+- Creating a cluster with kubeadm - https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/
+```shell
+IP_ADDR=$(ip addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+kubeadm init --apiserver-cert-extra-sans=controlplane --apiserver-advertise-address $IP_ADDR --pod-network-cidr=10.244.0.0/16
+```
+- Set up the kubeconfig:
+```shell
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+Add node to kube cluster from "kubeadm init"
+- kubeadm join 192.19.145.9:6443 --token vknise.9dxdc280u3bqpmwk --discovery-token-ca-cert-hash sha256:3926995399da0f1ed7d2a935a5a0f547d7384446ee4fdc11bab5a138202ea6b0
+
+- Install a network plugin:
+```shell
+
+```
+
+# Control plane failure
+- Get status of control plane - `kubectl get po -n kube-system`
+
+
+# Node failure
+- Get status of node - `kubectl get nodes`
+- Describe node - `kubectl describe node node_name`
+- Get disk space - `df -h`
+- Get kubelet status - `service kubelet status`
+- Get kubelet logs - `sudo journalctl -u kubelet` or with follow `sudo journalctl -u kubelet -f `
+- Check certificates - `openssl x509 -in /var/lib/kubelet/node_name.crt -text`
+- All folders with configs - `ls -l /var/lib/` -->> /var/lib/kubelet
 
 
 
