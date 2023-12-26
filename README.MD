@@ -1,5 +1,15 @@
 # CKA TIPS
 
+# Links with tasks and exercises to practice :
+
+- https://github.com/chadmcrowell/CKA-Exercises/blob/main/cluster-architecture.md
+- https://github.com/devopshubproject/cka-lab/tree/main/Task1
+- https://github.com/stretchcloud/cka-lab-practice/blob/master/ApplicationLifecycleManagement.md
+- https://github.com/moabukar/CKA-Exercises/tree/main/7-mock-exam-questions
+- https://killer.sh/order
+- https://kodekloud.com/courses/ultimate-certified-kubernetes-administrator-cka-mock-exam/
+- https://cloudacademy.com/exam/landing/35174/
+- https://www.youtube.com/results?search_query=CKA+Exam+Question
 
 # Kubernetes architecture
 
@@ -61,18 +71,18 @@ cat /etc/*release*
 - Get info about upgrade - `kubeadm upgrade plan`
 
 
-# Update cluster (master node) components
+# Update cluster (master node) components (kubeadmin, kubelet)
 - More info - https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/
 - Drain controlplane node - `kubectl drain controlplane`
 - Update the package index - `apt-get update`
 - Update kubeadm - `apt-get upgrade -y kubeadm=1.27.0-00`
 - Upgrade cluster - `kubeadm upgrade apply v1.27.0`
-- Upgrade kubelet - `apt-get upgrade -y kubelet=1.27.0-00`
+- Upgrade kubelet -  `apt-get upgrade -y kubelet=1.27.0-00`
 - Restart daemon - `systemctl daemon-reload` - Reload systemd manager configuration, reload all unit files, and recreate the entire dependency tree.
 - Restart kubelet - `systemctl restart kubelet`
+- Uncordon node - `kubectl uncordon controlplane`
 
-
-# Update cluster (worker node) components
+# Update cluster (worker node) components (kubeadmin, kubelet)
 - More info - https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/
 - Drain node - `kubectl drain node_name`
 - Update the package index - `apt-get update`
@@ -206,4 +216,21 @@ Add node to kube cluster from "kubeadm init"
 - All folders with configs - `ls -l /var/lib/` -->> /var/lib/kubelet
 
 
+
+
+apt-mark unhold kubeadm && \
+apt-get update && apt-get install -y kubeadm='1.27.0-*' && \
+apt-mark hold kubeadm
+
+
+apt-mark unhold kubelet kubectl && \
+apt-get update && apt-get install -y kubelet='1.27.0-*' kubectl='1.27.0-*' && \
+apt-mark hold kubelet kubectl
+
+
+ETCDCTL_API=3 etcdctl snapshot save /opt/etcd-backup.db \
+--endpoints=https://127.0.0.1:2379 \
+--cacert=/etc/kubernetes/pki/etcd/ca.crt \
+--cert=/etc/kubernetes/pki/etcd/server.crt \
+--key=/etc/kubernetes/pki/etcd/server.key 
 
