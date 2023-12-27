@@ -11,6 +11,7 @@
 - https://cloudacademy.com/exam/landing/35174/
 - https://www.youtube.com/results?search_query=CKA+Exam+Question
 
+
 # Kubernetes architecture
 
 1) etcd - key value to keep kubernetes state ( pods, secrets, service, config map ...... )
@@ -31,20 +32,28 @@
 - `ps -aux | grep kube-scheduler`
 - `ps -ef | grep etcd`
 
+
+# Get list process 
+- Get kubernetes process list -  `systemctl list-unit-files --type service --all | grep kube`
+
+
 # Static pods
 - Info about it - https://kubernetes.io/docs/tasks/configure-pod-container/static-pod/
 - Path - `/etc/kubernetes/manifests`
 - Create static pod -` kubectl run --image=nginx static-nginx --dry-run=client -o yaml  > /etc/kubernetes/manifests/static-busybox.yaml`
 
+
 # Kube Scheduler Configuration
 - Info about it - https://kubernetes.io/docs/reference/scheduling/config/
 - Info about it - https://kubernetes.io/docs/tasks/extend-kubernetes/configure-multiple-schedulers/
+
 
 # How does the Kubernetes scheduler work?
 - https://stackoverflow.com/questions/28857993/how-does-kubernetes-scheduler-work
 - https://jvns.ca/blog/2017/07/27/how-does-the-kubernetes-scheduler-work/
 - https://kubernetes.io/blog/2017/03/advanced-scheduling-in-kubernetes/
 - https://github.com/kubernetes/community/blob/master/contributors/devel/sig-scheduling/scheduling_code_hierarchy_overview.md
+
 
 # Pod Priority and Preemption 
 - Info about it - https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
@@ -53,9 +62,11 @@
 # Add Encryption 
 - https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/
 
+
 # Monitoring 
 - Get memory and CPU of nodes - `kubectl top node`
 - Get memory and CPU of pods - `kubectl top pod`
+
 
 # Drain and uncordon
 - Drain node (delete and move all pods (which have replicaset ) to another node + mark node unschedulable) - `kubectl drain node_name`
@@ -64,7 +75,8 @@
 - Uncordon node (only mark node schedulable) - `kubectl uncordon node_name`
 
 
-cat /etc/*release*
+# Get OS release (Linix)
+- Get release name - `cat /etc/*release*`
 
 
 # Get Info about upgrade 
@@ -82,6 +94,7 @@ cat /etc/*release*
 - Restart kubelet - `systemctl restart kubelet`
 - Uncordon node - `kubectl uncordon controlplane`
 
+
 # Update cluster (worker node) components (kubeadmin, kubelet)
 - More info - https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/
 - Drain node - `kubectl drain node_name`
@@ -95,12 +108,15 @@ cat /etc/*release*
 
 
 # Backup etcd
+- ???? - `cat /etc/system.d/system/etcd.service`
+
 - More info - https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#backing-up-an-etcd-cluster
 - Get etcd version - `kubectl -n kube-system describe pod etcd-controlplane | grep Image:`
 - Get client address - `kubectl -n kube-system describe pod etcd-controlplane | grep '\--listen-client-urls'`
 - Get etcd certificate file located - `kubectl -n kube-system describe pod etcd-controlplane | grep '\--cert-file'`
 - Get etcd trusted CA Certificate file located - `kubectl -n kube-system describe pod etcd-controlplane | grep '\--trusted-ca-file'`
 - Get etcd key file location - `kubectl -n kube-system describe pod etcd-controlplane | grep peer-key-file`
+
 - Create snapshot - ETCDCTL_API=3 etcdctl snapshot save /opt/snapshot-pre-boot.db \
   --endpoints=https://127.0.0.1:2379 \
   --cacert=/etc/kubernetes/pki/etcd/ca.crt \
@@ -128,7 +144,7 @@ volumes:
 - Get kubectl specific config - `kubectl config view --kubeconfig path_to_config`
 - Switch to cluster from config - `kubectl config use-context cluster_name`
 - Get current context - `kubectl config current-context --kubeconfig path_to_config`
-
+- Get context name - `kubectl config get-contexts -o name`
 
 
 # Certification OpenSSL
@@ -137,10 +153,8 @@ volumes:
 - Test - ``
 
 
-
 # KubeDNS
 - CoreDNS - deployed to kube-system  ns (2 pods)  -> service_name.namespace_name.service.cluster.local
-
 
 
 # Install Cluster - kubeadm
@@ -202,6 +216,7 @@ Add node to kube cluster from "kubeadm init"
 
 ```
 
+
 # Control plane failure
 - Get status of control plane - `kubectl get po -n kube-system`
 
@@ -215,22 +230,4 @@ Add node to kube cluster from "kubeadm init"
 - Check certificates - `openssl x509 -in /var/lib/kubelet/node_name.crt -text`
 - All folders with configs - `ls -l /var/lib/` -->> /var/lib/kubelet
 
-
-
-
-apt-mark unhold kubeadm && \
-apt-get update && apt-get install -y kubeadm='1.27.0-*' && \
-apt-mark hold kubeadm
-
-
-apt-mark unhold kubelet kubectl && \
-apt-get update && apt-get install -y kubelet='1.27.0-*' kubectl='1.27.0-*' && \
-apt-mark hold kubelet kubectl
-
-
-ETCDCTL_API=3 etcdctl snapshot save /opt/etcd-backup.db \
---endpoints=https://127.0.0.1:2379 \
---cacert=/etc/kubernetes/pki/etcd/ca.crt \
---cert=/etc/kubernetes/pki/etcd/server.crt \
---key=/etc/kubernetes/pki/etcd/server.key 
 
