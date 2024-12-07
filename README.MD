@@ -12,6 +12,16 @@
 - https://www.youtube.com/results?search_query=CKA+Exam+Question
 
 
+
+# Practice 
+
+- https://killercoda.com/killer-shell-cka
+- https://killercoda.com/sachin/course/CKA
+- https://killercoda.com/amitk
+- https://killercoda.com/killer-shell-cka
+- https://killercoda.com/
+- 
+
 # Kubernetes architecture
 
 1) etcd - key value to keep kubernetes state ( pods, secrets, service, config map ...... )
