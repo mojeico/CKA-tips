@@ -25,17 +25,17 @@
 # Kubernetes architecture
 
 1) etcd - key value to keep kubernetes state ( pods, secrets, service, config map ...... )
-2) kube-apiserver - manage kubectl commond and manage all request Cluster Architecture components  ()
+2) kube-apiserver - manage kubectl command and manage all request Cluster Architecture components  (manage etcd, manage kubelet, manage kube-scheduler, manage kube-controller-manager, manage kube-proxy)
 3) kube-controller-manager - list of controller processes.
-   - Node controller - check node every 5s 
+   - Node controller - check node every 5s, monitor node status, add and remove node from cluster (--node-monitor-period=5s)
    - Replication controller - check ReplicaSet and number of pods 
    - Job controller - 
    - EndpointSlice controller - 
    - ServiceAccount controller -
    - etc...
-4) kube-scheduler - deciding and schedule pod on node (but not create)
-5) kubelet - run pod on node 
-6) kube-proxy - run on each node and manage networking in cluster (use ip table rule )
+4) kube-scheduler - deciding and schedule pod on node (check memory, workernode capacity, affinity roles,  BUT NOT CREATE )
+5) kubelet - run on each node, create pod, monitor pod and report to kube-apiserver
+6) kube-proxy - daemonset, run on each node and manage networking in cluster (use ip table rule ), manage service and endpoint
 
 
 # Get process of k8s
