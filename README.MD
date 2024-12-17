@@ -78,6 +78,12 @@
 - Get memory and CPU of pods - `kubectl top pod`
 
 
+# Metrics server 
+- Metrics Server collects resource metrics from Kubelets and exposes them in Kubernetes apiserver 
+  through Metrics API for use by Horizontal Pod Autoscaler and Vertical Pod Autoscaler. 
+  Metrics API can also be accessed by kubectl top, making it easier to debug autoscaling pipelines.
+
+
 # Drain and uncordon
 - Drain node (delete and move all pods (which have replicaset ) to another node + mark node unschedulable) - `kubectl drain node_name`
 - Drain node - `kubectl drain node_name --ignore-daemonsets`
@@ -98,6 +104,7 @@
 - Drain controlplane node - `kubectl drain controlplane`
 - Update the package index - `apt-get update`
 - Update kubeadm - `apt-get upgrade -y kubeadm=1.27.0-00`
+- Plan upgrade cluster - `kubeadm upgrade plan v1.27.0`
 - Upgrade cluster - `kubeadm upgrade apply v1.27.0`
 - Upgrade kubelet -  `apt-get upgrade -y kubelet=1.27.0-00`
 - Restart daemon - `systemctl daemon-reload` - Reload systemd manager configuration, reload all unit files, and recreate the entire dependency tree.
