@@ -9,8 +9,7 @@
 - https://killer.sh/order
 - https://kodekloud.com/courses/ultimate-certified-kubernetes-administrator-cka-mock-exam/
 - https://cloudacademy.com/exam/landing/35174/
-- https://www.youtube.com/results?search_query=CKA+Exam+Question
-
+- https://github.com/kodekloudhub/certified-kubernetes-administrator-course
 
 
 # Practice 
@@ -160,8 +159,10 @@ volumes:
 - Get kubectl config - `kubectl config view`
 - Get kubectl specific config - `kubectl config view --kubeconfig path_to_config`
 - Switch to cluster from config - `kubectl config use-context cluster_name`
+- - Switch to cluster from config - `kubectl config use-context cluster_name --kubeconfig path_to_config `
 - Get current context - `kubectl config current-context --kubeconfig path_to_config`
 - Get context name - `kubectl config get-contexts -o name`
+- Get pod with specific kubeconfig - `kubectl get pod --kubeconfig my_kube_config`
 
 
 # Certification OpenSSL
@@ -172,6 +173,27 @@ volumes:
 
 # KubeDNS
 - CoreDNS - deployed to kube-system  ns (2 pods)  -> service_name.namespace_name.service.cluster.local
+- kubectl describe configmap coredns -n kube-system - get config of coredns
+
+
+
+- nslookup mysql.payroll.svc.cluster.local  - get ip of service 
+
+- ip a - show all network interface
+- ip link show eth0  - show network interface eth0
+- ip addr show eth0  - show address of network interface eth0
+- netstat -anp | grep etcd - check etcd status
+
+-  ps -aux | grep kubelet - get kubelet process
+
+
+# CNI 
+- /opt/cni/bin - path to cni plugins
+- ls /etc/cni/net.d/  - list of cni config files
+
+
+
+
 
 
 # Install Cluster - kubeadm
